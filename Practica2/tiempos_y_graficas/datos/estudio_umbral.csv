@@ -1,0 +1,18 @@
+Generando matriz de prueba de 5000x5000...
+Matriz generada. Arrancando baterias de pruebas...
+
+Umbral_n0;Tiempo_DyV_ms
+2;352
+4;193
+8;142
+16;100
+32;77
+64;62
+128;52
+256;49
+512;46
+1024;43
+2048;41
+4096;36
+
+Experimento terminado.
