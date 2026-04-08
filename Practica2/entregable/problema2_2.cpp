@@ -174,7 +174,7 @@ int main() {
 }
 */
 
-
+/*
 //EJECUTAR ESTE MAIN CON ./problema2_2 > ../tiempos_y_graficas/datos/tiempos_generales.csv
 int main() {
     // Inicializamos la semilla de números aleatorios
@@ -221,5 +221,40 @@ int main() {
 
     return 0;
 }
+*/
 
+int main() {
+    //Definimos una matriz de prueba
+    vector<vector<int>> matriz_prueba = {
+        {12, 45,  2,  8},
+        {99, 33, 56,  1},
+        { 4, 88, 72, 99},
+        {10, 25, 40, 60}
+    };
+
+    cout << "PRUEBA DEL PROBLEMA 2.2: MAXIMO Y SEGUNDO MAXIMO\n";
+
+    //Prueba de Fuerza Bruta
+    int max2_fb;
+    int max1_fb = CalcularMaximosFuerzaBruta(matriz_prueba, max2_fb);
+
+    cout << "\nResultados mediante Fuerza Bruta:" << endl;
+    cout << "-> Primer Maximo (max1): " << max1_fb << endl;
+    cout << "-> Segundo Maximo (max2): " << max2_fb << endl;
+
+    //Prueba de Divide y Vencerás
+    int filas = matriz_prueba.size();
+    int columnas = matriz_prueba[0].size();
+
+    //El umbral que calculamos como óptimo en la gráfica
+    int umbral_n0 = 4096;
+
+    Maximos resultados_dyv = MaximosDyV(matriz_prueba, 0, filas - 1, 0, columnas - 1, umbral_n0);
+
+    cout << "\nResultados mediante Divide y Venceras (Umbral = " << umbral_n0 << "):" << endl;
+    cout << "-> Primer Maximo (max1): " << resultados_dyv.max1 << endl;
+    cout << "-> Segundo Maximo (max2): " << resultados_dyv.max2 << endl;
+
+    return 0;
+}
 
