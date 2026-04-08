@@ -31,25 +31,38 @@ int calcular_n_inversiones_fbruta(vector<int> &v){
     return n_inversiones;
 }
 
-//Algoritmo para calcular el número de inversiones de un vector mediande DyV
+//Algoritmo para calcular el número de inversiones de un vector mediande DyV. Para que el algoritmo sea eficiente tenemos
+// que ordenar el vector en la función
 
 int contar_dividir(vector<int> &v, int inicio, int mitad, int fin) {
     int n_inversiones=0;
-    vector<int> v1, v2;
-
-    for (int i = inicio; i <= mitad; i++) {
-        v1.push_back(v[i]);
-    }
-    for (int i = mitad + 1; i <= fin; i++) {
-        v2.push_back(v[i]);
-    }
-
-    for (int i = 0; i < v1.size(); i++) {
-        for (int j = 0; j < v2.size(); j++) {
-            if (v1[i] > v2[j]) {
-                n_inversiones++;
-            }
+    vector<int> vaux;
+    int i = inicio;
+    int j = mitad+1;
+    while (i<=mitad && j<=fin) {
+        if (v[i] <= v[j]) {
+            vaux.push_back(v[i]);
+            i++;
+        } else {
+            vaux.push_back(v[j]);
+            // como v[j] es menor que todos los elementos que hay en v[1] entonces sumamos todas las inversiones de golpe
+            n_inversiones += mitad - i + 1;
+            j++;
         }
+
+    }
+
+    while (i<=mitad) {
+        vaux.push_back(v[i]);
+        i++;
+    }
+    while (j<=fin) {
+        vaux.push_back(v[j]);
+        j++;
+    }
+
+    for (int k = inicio; k <= fin; k++) {
+        v[k] = vaux[k - inicio];
     }
     return n_inversiones;
 }
@@ -92,7 +105,7 @@ int main () {
 
     // Configuraciones de nuestra prueba
     int salto = 500;    //Incremento del tamaño del vector en cada iteración
-    int max_N = 10000;   //Límite de elementos a probar
+    int max_N = 20000;   //Límite de elementos a probar
 
     // Imprimimos la cabecera en formato CSV (separador: punto y coma)
     cout << "Elementos_N;Tiempo_FB_ms;Tiempo_DyV_ms" << endl;
