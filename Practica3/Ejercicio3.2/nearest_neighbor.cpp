@@ -6,6 +6,9 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <algorithm>
+#include <numeric>
+#include <limits>
 
 using namespace std;
 
@@ -14,8 +17,47 @@ pair<vector<int>, int> heuristic_nearest_neighbor(const vector<vector<int>>& dis
      * TODO: Implement the Nearest Neighbor heuristic.
      * Return: A pair containing the tour (vector of node indices) and the total tour cost.
      */
+    int n = distance_matrix.size();
     vector<int> tour;
-    int total_cost = -1;
+    int total_cost = 0;
+
+    //Si el grafo no contiene ciudades lo devolvemos vacio
+    if (n==0) return {tour, total_cost};
+
+    //Usamos un vector para ir "tachando" las ciudades por las que hemos pasado
+    vector<bool> visitado(n,false);
+
+    //Empezamos la ruta en la primera ciudad, la 0
+    int actual = 0;
+    tour.push_back(actual);
+    visitado[actual]= true;
+
+    //Mientras queden ciudades para visitar en el mapa
+    while (tour.size() < n) {
+        int siguiente = -1;
+        //Empezamos con una distancia enorme para comparar
+        int distancia_minima = numeric_limits<int>::max();
+
+        //Miramos todas las ciudades a ver cual queda mas cerca
+        for (int i = 0; i < n; ++i) {
+            //Si no la hemos visitado aun y esta mas cerca que la mejor la guardamos
+            if (!visitado[i] && distance_matrix[actual][i] < distancia_minima) {
+                distancia_minima = distance_matrix[actual][i];
+                siguiente = i;
+            }
+        }
+
+        //Viajamos a la ciudad que hemos elegido
+        tour.push_back(siguiente);
+        visitado[siguiente] = true;
+        total_cost += distancia_minima;
+
+        //En la siguiente iteracion la actual es la que ahora es siguiente
+        actual = siguiente;
+    }
+
+    //Cerramos la ruta volviendo al punto de partida
+    total_cost += distance_matrix[actual][tour[0]];
 
     return {tour, total_cost};
 }
