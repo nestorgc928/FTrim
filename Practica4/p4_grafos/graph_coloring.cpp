@@ -1,5 +1,7 @@
 ﻿#include "graph_coloring.h"
 
+#include <queue>
+
 #include <algorithm>
 #include <cctype>
 #include <fstream>
@@ -155,6 +157,34 @@ vector<int> greedy_coloring(const Graph& graph) {
     return colors;
 }
 
+bool es_valida_backtracking (const Graph& graph, int max_colors, int vertice, ColoringResult& result) {
+
+    //Primero comprobamos si ya no quedan más vértices por colorear.
+    if (vertice == graph.num_vertices) {
+        result.success = true;
+        result.colors_used = count_used_colors(result.colors);
+        return true;
+    }
+
+
+    // Ahora implementamos el backtracking: Si el vértice se puede colorear, entonces continuamos avanzando en profundidad.
+    // Si no se puede colorear,podamos la rama.
+    for (int color = 0; color < max_colors; ++color) {
+        result.nodes_generated++;
+        if (is_color_valid(vertice, color, result.colors, graph)) {
+            result.colors[vertice] = color;
+            if (es_valida_backtracking(graph, max_colors, vertice + 1, result)) {
+                return true;
+            }
+            else result.colors[vertice] = -1;
+        }
+        // Si el color es inválido o si no es posible colorear el vértice, podamos la rama
+        else result.nodes_pruned += 1;
+    }
+    return false;
+}
+
+
 /**
  * @brief Intenta colorear el grafo usando backtracking con un máximo de max_colors.
  * @param graph El grafo a colorear.
@@ -164,12 +194,30 @@ vector<int> greedy_coloring(const Graph& graph) {
 ColoringResult backtracking_color_with_k(const Graph& graph, int max_colors) {
     ColoringResult result;
     result.colors.assign(graph.num_vertices, -1);
-    // TODO: Implement a recursive backtracking search that assigns colors to each vertex
-    
     // using at most `max_colors`. The algorithm should update `result.nodes_generated`,
     // `result.nodes_pruned` and `result.max_live_nodes`.
+
+    result.nodes_generated=1;
+    result.nodes_pruned=0;
+    result.max_live_nodes = graph.num_vertices;
+
+    es_valida_backtracking(graph, max_colors, 0, result);
+
     return result;
 }
+
+struct Nodo {
+    vector<int> colores;
+    int nivel;
+    int max_colors;
+
+    // Para poder meter los nodos en una cola de prioridad correctamente como se sugiere en el guión de prácticas,
+    // necesitamos sobrecargar el operador > para que ordene los nodos según el color de índice más alto usado.
+
+    bool operator>(const Nodo & nodo) const{
+        return this->max_colors > nodo.max_colors;
+    }
+};
 
 /**
  * @brief Encuentra el número mínimo de colores necesarios para colorear el grafo usando branch and bound.
@@ -179,9 +227,65 @@ ColoringResult backtracking_color_with_k(const Graph& graph, int max_colors) {
 ColoringResult branch_and_bound_min_colors(const Graph& graph) {
     ColoringResult result;
     result.colors.assign(graph.num_vertices, -1);
-    // TODO: Implement a branch and bound search that finds the smallest number of colors
     // needed to color the graph. Use a greedy upper bound and a lower bound based on the
     // current partial assignment to prune the search.
+
+    //Antes de nada, para establecer una cota inicial para el B&B, utilizamos la solución greedy proporcionada
+    vector<int> sol_greedy=greedy_coloring(graph);
+    int cota = count_used_colors(sol_greedy);
+
+    // Ahora establecemos el result inicial conforme la solución greedy encontrada.
+    result.success=true;
+    result.colors=sol_greedy;
+    result.colors_used=cota;
+    result.nodes_generated=1;
+    result.nodes_pruned=0;
+    result.max_live_nodes=1;
+
+    priority_queue<Nodo, vector<Nodo>, greater<Nodo>> cola;
+
+    Nodo raiz;
+    raiz.colores.assign(graph.num_vertices, -1);
+    raiz.nivel=0;
+    raiz.max_colors=-1;
+
+    cola.push(raiz);
+    while (!cola.empty()) {
+
+        // Primero vemos si al alcanzar el final la solución obtenida es la mejor solución
+        if (cola.size()>result.max_live_nodes) result.max_live_nodes=cola.size();
+        Nodo actual = cola.top();
+        cola.pop();
+        if (actual.nivel == graph.num_vertices) {
+            int coste = actual.max_colors+1;
+            if (coste < result.colors_used) {
+                result.colors_used=coste;
+                result.colors=actual.colores;
+                cota=coste;
+            }
+        }
+        else {
+            int nivel = actual.nivel;
+
+            for (int color = 0; color <= actual.max_colors+1; color++) {
+                result.nodes_generated++;
+                if (max(actual.max_colors,color)+1 >= cota) {
+                    result.nodes_pruned++;
+                    continue;
+                }
+                if (is_color_valid(nivel, color, actual.colores, graph)) {
+                    Nodo hijo;
+                    hijo.colores=actual.colores;
+                    hijo.colores[nivel]=color;
+                    hijo.nivel=nivel+1;
+                    hijo.max_colors=max(actual.max_colors,color);
+                    cola.push(hijo);
+                }
+            }
+        }
+    }
+
+
     return result;
 }
 
