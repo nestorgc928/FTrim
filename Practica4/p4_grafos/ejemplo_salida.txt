@@ -1,0 +1,33 @@
+Ejemplo de salida para el ejemplo map_coloring_example.txt
+
+Loaded graph with 6 vertices and 7 edges.
+Greedy coloring uses 3 colors.
+
+=== Backtracking with max K=3 ===
+Colors used: 3
+Nodes generated: X  # (ej. 7-15, depende de la implementación)
+Nodes pruned: Y    # (ej. 2-5, si hay podas por conflictos)
+Max live nodes: Z  # (ej. 6, profundidad máxima)
+Color assignment:
+  vertex 0 -> color A
+  vertex 1 -> color B
+  vertex 2 -> color C
+  vertex 3 -> color B
+  vertex 4 -> color A
+  vertex 5 -> color C
+  # (asignación válida, sin adyacentes con mismo color)
+
+=== Branch and Bound Optimal Coloring ===
+Colors used: 3
+Nodes generated: W  # (ej. 5-10, con poda)
+Nodes pruned: V    # (ej. 3-7, por cotas)
+Max live nodes: U  # (ej. 4-6)
+Color assignment:
+  vertex 0 -> color P
+  vertex 1 -> color Q
+  vertex 2 -> color R
+  vertex 3 -> color Q
+  vertex 4 -> color P
+  vertex 5 -> color R
+  # (óptima, mínimo 3 colores)
+

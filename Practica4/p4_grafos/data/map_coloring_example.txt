@@ -1,0 +1,16 @@
+# Example graph coloring instance
+# Format:
+#   n [m]
+#   u v
+# Vertex identifiers may be 0-indexed or 1-indexed.
+
+6 7
+1 2
+1 3
+2 3
+2 4
+3 5
+4 5
+5 6
+
+
