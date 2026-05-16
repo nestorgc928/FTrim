@@ -281,6 +281,7 @@ ColoringResult branch_and_bound_min_colors(const Graph& graph) {
                     hijo.max_colors=max(actual.max_colors,color);
                     cola.push(hijo);
                 }
+                else result.nodes_pruned++;
             }
         }
     }
