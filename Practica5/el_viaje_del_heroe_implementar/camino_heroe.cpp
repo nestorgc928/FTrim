@@ -35,8 +35,11 @@ void el_camino_del_heroe(const vector<vector<int>>& C,
     // PASO 1: Inicializar D con los valores de C (caso base de la recurrencia)
     // -------------------------------------------------------------------------
     // >>> AQUI DEBE IR LA IMPLEMENTACION >>>
-
-    
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            D[i][j] = C[i][j];
+        }
+    }
     // <<< FIN DEL BLOQUE <<<
 
 
@@ -47,7 +50,24 @@ void el_camino_del_heroe(const vector<vector<int>>& C,
     //         Recordar actualizar P[i][j] cada vez que se mejore D[i][j].
     // -------------------------------------------------------------------------
     // >>> AQUI DEBE IR LA IMPLEMENTACION >>>
+    //El bucle externo es el del nodo intermedio que intentamos añadir
+    for (int k = 0; k < n; k++) {
+        //Bucle nodo de origen
+        for (int i = 0; i < n; i++) {
+            //Bucle nodo de destino
+            for (int j = 0; j < n; j++) {
+                //Como un nodo no puede ser intermedio de si mismo, ni k puede ser i o j
+                if (i==k || j==k || i==j) continue;
 
+                //Comprobamos ahora si pasar por 'k' mejora el coste de D[i][j]
+                //teniendo en cuenta que hay que añadir el coste de vencer al guardian de G[k]
+                if ((D[i][k] + G[k] + D[k][j]) < D[i][j]) {
+                    D[i][j] = D[i][k] + G[k] + D[k][j];
+                    P[i][j] = k;
+                }
+            }
+        }
+    }
 
     // <<< FIN DEL BLOQUE <<<
 }
